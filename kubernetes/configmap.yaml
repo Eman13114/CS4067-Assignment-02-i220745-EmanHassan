@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: online-event-booking-22i0745
+data:
+  # RabbitMQ configuration
+  rabbitmq_host: "rabbitmq"
+  rabbitmq_port: "5672"
+  rabbitmq_user: "guest"
+  
+  # Service URLs for inter-service communication
+  user_service_url: "http://userservice:5000"
+  event_service_url: "http://eventservice:5001"
+  booking_service_url: "http://bookingservice:5002"
+  notification_service_url: "http://notificationservice:5003"
+---
+# RabbitMQ Deployment and Service (added here to maintain the required file structure)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+  namespace: online-event-booking-22i0745
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+      - name: rabbitmq
+        image: rabbitmq:3-management
+        ports:
+        - containerPort: 5672
+          name: amqp
+        - containerPort: 15672
+          name: management
+        env:
+        - name: RABBITMQ_DEFAULT_USER
+          value: "guest"
+        - name: RABBITMQ_DEFAULT_PASS
+          value: "guest"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+  namespace: online-event-booking-22i0745
+spec:
+  selector:
+    app: rabbitmq
+  ports:
+  - port: 5672
+    targetPort: 5672
+    name: amqp
+  - port: 15672
+    targetPort: 15672
+    name: management
+  type: ClusterIP

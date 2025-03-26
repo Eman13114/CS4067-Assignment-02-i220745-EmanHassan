@@ -1,0 +1,52 @@
+services:
+  bookingservice:
+    image: 22i0745/booking-service:latest
+    ports:
+      - "5002:5002"
+    environment:
+      - MONGODB_URI=${MONGODB_URI}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+    depends_on:
+      - rabbitmq
+
+  eventservice:
+    image: 22i0745/event-service:latest
+    ports:
+      - "5001:5001"
+    environment:
+      - MONGODB_URI=${MONGODB_URI}
+  notificationservice:
+    image: 22i0745/notification-service:latest
+    ports:
+      - "5003:5003"
+    environment:
+      - MONGODB_URI=${MONGODB_URI}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+    depends_on:
+      - rabbitmq
+
+  userservice:
+    image: 22i0745/user-service:latest
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGODB_URI=${MONGODB_URI}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+    depends_on:
+      - rabbitmq
+
+  user-service-client:
+    image: 22i0745/user-service-client:latest
+    ports:
+      - "3001:3001"
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest

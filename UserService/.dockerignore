@@ -1,0 +1,24 @@
+# 1) Ignore everything by default
+**
+
+# 2) Whitelist minimal essential backend files
+!.dockerignore
+!Dockerfile
+!package.json
+!package-lock.json
+!index.js
+!src/
+!models/
+
+# 3) Optionally include the client folder (if you truly need it in the same image)
+!user-service-client/
+
+# 4) Always ignore node_modules (globally + inside user-service-client)
+node_modules
+user-service-client/node_modules
+
+# 5) Other files/folders to ignore
+.git
+.env
+npm-debug.log
+docker-compose.yml

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eventservice
+  namespace: online-event-booking-22i0745
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: eventservice
+  template:
+    metadata:
+      labels:
+        app: eventservice
+    spec:
+      containers:
+      - name: eventservice
+        image: 22i0745/event-service:latest
+        ports:
+        - containerPort: 5001
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "512Mi"
+          requests:
+            cpu: "0.2"
+            memory: "256Mi"
+        env:
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: mongodb_uri
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eventservice
+  namespace: online-event-booking-22i0745
+spec:
+  selector:
+    app: eventservice
+  ports:
+  - port: 5001
+    targetPort: 5001
+  type: ClusterIP

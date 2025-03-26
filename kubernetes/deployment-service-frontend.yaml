@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: online-event-booking-22i0745
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: 22i0745/user-service-client:latest
+        ports:
+        - containerPort: 3001
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "512Mi"
+          requests:
+            cpu: "0.2"
+            memory: "256Mi"
+        env:
+        - name: REACT_APP_USER_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: user_service_url
+        - name: REACT_APP_EVENT_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: event_service_url
+        - name: REACT_APP_BOOKING_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: booking_service_url
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: online-event-booking-22i0745
+spec:
+  selector:
+    app: frontend
+  ports:
+  - port: 80
+    targetPort: 3001
+  type: ClusterIP

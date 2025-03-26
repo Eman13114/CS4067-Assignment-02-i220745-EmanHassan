@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookingservice
+  namespace: online-event-booking-22i0745
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bookingservice
+  template:
+    metadata:
+      labels:
+        app: bookingservice
+    spec:
+      containers:
+      - name: bookingservice
+        image: 22i0745/booking-service:latest
+        ports:
+        - containerPort: 5002
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "512Mi"
+          requests:
+            cpu: "0.2"
+            memory: "256Mi"
+        env:
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: mongodb_uri
+        - name: RABBITMQ_URL
+          value: "amqp://$(RABBITMQ_USER):$(RABBITMQ_PASSWORD)@$(RABBITMQ_HOST):$(RABBITMQ_PORT)"
+        - name: RABBITMQ_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: rabbitmq_host
+        - name: RABBITMQ_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: rabbitmq_port
+        - name: RABBITMQ_USER
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: rabbitmq_user
+        - name: RABBITMQ_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: rabbitmq_password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookingservice
+  namespace: online-event-booking-22i0745
+spec:
+  selector:
+    app: bookingservice
+  ports:
+  - port: 5002
+    targetPort: 5002
+  type: ClusterIP

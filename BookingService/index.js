@@ -44,7 +44,7 @@ app.post('/bookings', async (req, res) => {
     let availableTickets;
     try {
       const eventObjectId = mongoose.Types.ObjectId.isValid(eventId) ? eventId : new mongoose.Types.ObjectId(eventId);
-      const availabilityResponse = await axios.get(`http://localhost:5001/events/${eventObjectId}/availability`, {
+      const availabilityResponse = await axios.get(`http://eventservice:5001/events/${eventObjectId}/availability`, {
         timeout: 5000,
       });
       availableTickets = availabilityResponse.data.availableTickets;
@@ -73,7 +73,7 @@ app.post('/bookings', async (req, res) => {
     // Update event availability with timeout and logging from MFLP-10
     try {
       const newTickets = availableTickets - tickets;
-      const updateResponse = await axios.patch(`http://localhost:5001/events/${eventObjectId}/availability`, {
+      const updateResponse = await axios.patch(`http://eventservice:5001/events/${eventObjectId}/availability`, {
         availableTickets: newTickets,
       }, {
         timeout: 5000,

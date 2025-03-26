@@ -1,0 +1,4 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: online-event-booking-22i0745  # All lowercase, hyphens instead of uppercase letters
